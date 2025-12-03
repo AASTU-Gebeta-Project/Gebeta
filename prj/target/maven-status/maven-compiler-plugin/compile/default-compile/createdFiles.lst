@@ -1,7 +1,7 @@
 com/example/App.class
+com/example/GebetaGameTerminal.class
 module-info.class
 com/example/IGebetaGame.class
 com/example/Board.class
 com/example/GebetaGame.class
-com/example/GebetaGameGUI.class
 com/example/Player.class

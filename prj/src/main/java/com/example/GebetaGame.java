@@ -29,6 +29,7 @@ class GebetaGame implements IGebetaGame {
     @Override
     public void makeMove(int pitIndex) {
         if (!gameStarted || isGameOver() || board.getSeeds(pitIndex) == 0) return;
+        // Third one is to check whether the pit is empty since you can't choose an empty pit
 
         int pitsPerSide = board.getPitsPerSide();
         if ((currentPlayer == 1 && (pitIndex < 0 || pitIndex >= pitsPerSide)) ||
@@ -41,7 +42,7 @@ class GebetaGame implements IGebetaGame {
 
         for (int i = 0; i < seeds; i++) {
             currentIndex = getNextIndex(currentIndex, currentPlayer);
-            while ((currentPlayer == 1 && currentIndex == -2) || (currentPlayer == 2 && currentIndex == -1)) {
+            if ((currentPlayer == 1 && currentIndex == -2) || (currentPlayer == 2 && currentIndex == -1)) {
                 currentIndex = getNextIndex(currentIndex, currentPlayer);
             }
             board.addSeeds(currentIndex, 1);
@@ -56,7 +57,12 @@ class GebetaGame implements IGebetaGame {
                 if (capturedSeeds > 0) {
                     board.setSeeds(currentIndex, 0);
                     board.setSeeds(oppositeIndex, 0);
-                    board.addSeeds(p1Capture ? -1 : -2, capturedSeeds + 1);
+                    if (p1Capture) {
+                        board.addSeeds(-1, capturedSeeds + 1);
+                    } else {
+                        board.addSeeds(-2, capturedSeeds + 1);
+                    }
+
                 }
             }
         }
@@ -64,7 +70,11 @@ class GebetaGame implements IGebetaGame {
         if ((currentPlayer == 1 && currentIndex == -1) || (currentPlayer == 2 && currentIndex == -2)) {
             extraTurn = true;
         } else {
-            currentPlayer = (currentPlayer == 1) ? 2 : 1;
+            if (currentPlayer == 1) {
+                currentPlayer = 2;
+            } else {
+                currentPlayer = 1;
+            }
         }
 
         player1.setScore(board.getPlayer1Store());
@@ -77,10 +87,18 @@ class GebetaGame implements IGebetaGame {
         if (currentIndex == -1) return pitsPerSide;
         if (currentIndex == -2) return 0;
         if (currentIndex >= 0 && currentIndex < pitsPerSide) {
-            return currentIndex == pitsPerSide - 1 ? -1 : currentIndex + 1;
+            if (currentIndex == pitsPerSide - 1) {
+                return -1;   
+            } else {
+                return currentIndex + 1;
+            }
         }
         if (currentIndex >= pitsPerSide && currentIndex < pitsPerSide * 2) {
-            return currentIndex == pitsPerSide * 2 - 1 ? -2 : currentIndex + 1;
+            if (currentIndex == pitsPerSide*2 - 1) {
+                return -2;   
+            } else {
+                return currentIndex + 1;
+            }
         }
         return currentIndex;
     }
